@@ -1,4 +1,4 @@
-# src/MLP_project_structure/cli.py
+# src/my_project/cli.py
 
 import argparse
 
