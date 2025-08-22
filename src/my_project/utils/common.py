@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Any, List
-
 import json
+
 import joblib
 import yaml
 from box import ConfigBox
@@ -11,7 +11,7 @@ from ensure import ensure_annotations
 from my_project import logger
 
 
-@ensure_annotations
+@ensure_annotations(verbose=True)
 def read_yaml(path_to_yaml: Path) -> ConfigBox:
     """
     Reads a YAML file and returns its content as a ConfigBox object.
@@ -55,14 +55,14 @@ def create_directories(path_to_dirs: List[Path]) -> None:
             raise
 
 
-@ensure_annotations
-def save_json(path: Path, data: Any) -> None:
+@ensure_annotations(verbose=True)
+def save_json(path: Path, data: dict) -> None:
     """
-    Saves data to a JSON file.
+    Saves a dictionary to a JSON file.
 
     Args:
         path (Path): Path to the JSON file.
-        data (Any): Data to save.
+        data (dict): Dictionary data to save.
     """
     try:
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -76,21 +76,21 @@ def save_json(path: Path, data: Any) -> None:
         raise
 
 
-@ensure_annotations
-def load_json(path: Path) -> Any:
+@ensure_annotations(verbose=True)
+def load_json(path: Path) -> ConfigBox:
     """
-    Loads data from a JSON file.
+    Loads data from a JSON file and returns it as a ConfigBox.
 
     Args:
         path (Path): Path to the JSON file.
 
     Returns:
-        Any: Content of the JSON file.
+        ConfigBox: Content of the JSON file as a ConfigBox object.
     """
     try:
         content = json.loads(path.read_text(encoding='utf-8'))
         logger.info(f"Data loaded from JSON file: '{path}'")
-        return content
+        return ConfigBox(content)
     except FileNotFoundError as e:
         logger.error(f"JSON file not found: {e}")
         raise
@@ -99,7 +99,7 @@ def load_json(path: Path) -> Any:
         raise ValueError(f"Invalid JSON file: {path}") from e
 
 
-@ensure_annotations
+@ensure_annotations(verbose=True)
 def save_binary(path: Path, data: Any) -> None:
     """
     Saves data to a binary file using joblib.
@@ -117,7 +117,7 @@ def save_binary(path: Path, data: Any) -> None:
         raise
 
 
-@ensure_annotations
+@ensure_annotations(verbose=True)
 def load_binary(path: Path) -> Any:
     """
     Loads data from a binary file using joblib.
@@ -140,7 +140,7 @@ def load_binary(path: Path) -> Any:
         raise ValueError(f"Invalid binary file: {path}") from e
 
 
-@ensure_annotations
+@ensure_annotations(verbose=True)
 def get_size(path: Path) -> int:
     """
     Gets the size of a file in bytes.
