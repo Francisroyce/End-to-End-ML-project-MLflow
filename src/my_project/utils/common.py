@@ -11,7 +11,7 @@ from ensure import ensure_annotations
 from my_project import logger
 
 
-@ensure_annotations(verbose=True)
+@ensure_annotations
 def read_yaml(path_to_yaml: Path) -> ConfigBox:
     """
     Reads a YAML file and returns its content as a ConfigBox object.
@@ -38,7 +38,7 @@ def read_yaml(path_to_yaml: Path) -> ConfigBox:
         raise BoxValueError(f"Invalid YAML file: {path_to_yaml}") from e
 
 
-@ensure_annotations(verbose=True)
+@ensure_annotations
 def create_directories(path_to_dirs: List[Path]) -> None:
     """
     Creates directories if they do not exist.
@@ -55,7 +55,7 @@ def create_directories(path_to_dirs: List[Path]) -> None:
             raise
 
 
-@ensure_annotations(verbose=True)
+@ensure_annotations
 def save_json(path: Path, data: dict) -> None:
     """
     Saves a dictionary to a JSON file.
@@ -76,7 +76,7 @@ def save_json(path: Path, data: dict) -> None:
         raise
 
 
-@ensure_annotations(verbose=True)
+@ensure_annotations
 def load_json(path: Path) -> ConfigBox:
     """
     Loads data from a JSON file and returns it as a ConfigBox.
@@ -99,7 +99,7 @@ def load_json(path: Path) -> ConfigBox:
         raise ValueError(f"Invalid JSON file: {path}") from e
 
 
-@ensure_annotations(verbose=True)
+@ensure_annotations
 def save_binary(path: Path, data: Any) -> None:
     """
     Saves data to a binary file using joblib.
@@ -117,7 +117,7 @@ def save_binary(path: Path, data: Any) -> None:
         raise
 
 
-@ensure_annotations(verbose=True)
+@ensure_annotations
 def load_binary(path: Path) -> Any:
     """
     Loads data from a binary file using joblib.
@@ -140,7 +140,7 @@ def load_binary(path: Path) -> Any:
         raise ValueError(f"Invalid binary file: {path}") from e
 
 
-@ensure_annotations(verbose=True)
+@ensure_annotations
 def get_size(path: Path) -> int:
     """
     Gets the size of a file in bytes.
