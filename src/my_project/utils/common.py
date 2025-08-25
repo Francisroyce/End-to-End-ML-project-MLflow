@@ -1,27 +1,18 @@
 from pathlib import Path
-from typing import Any, List
+from typing import Any, List, Union
 import json
-
 import joblib
 import yaml
 from box import ConfigBox
 from box.exceptions import BoxValueError
 from ensure import ensure_annotations
-
 from my_project import logger
 
-
-@ensure_annotations
+# -------------------------
+# YAML utilities
+# -------------------------
+# Removed ensure_annotations to avoid TypeError with ConfigBox
 def read_yaml(path_to_yaml: Path) -> ConfigBox:
-    """
-    Reads a YAML file and returns its content as a ConfigBox object.
-
-    Args:
-        path_to_yaml (Path): Path to the YAML file.
-
-    Returns:
-        ConfigBox: Content of the YAML file as a ConfigBox object.
-    """
     try:
         with path_to_yaml.open('r', encoding='utf-8') as yaml_file:
             content = yaml.safe_load(yaml_file)
@@ -37,15 +28,14 @@ def read_yaml(path_to_yaml: Path) -> ConfigBox:
         logger.error(f"Error reading YAML file: {e}")
         raise BoxValueError(f"Invalid YAML file: {path_to_yaml}") from e
 
+# -------------------------
+# Directory utility
+# -------------------------
+# Removed ensure_annotations to avoid TypeError with Union[Path, List[Path]]
+def create_directories(path_to_dirs: Union[Path, List[Path]]) -> None:
+    if isinstance(path_to_dirs, Path):
+        path_to_dirs = [path_to_dirs]
 
-@ensure_annotations
-def create_directories(path_to_dirs: List[Path]) -> None:
-    """
-    Creates directories if they do not exist.
-
-    Args:
-        path_to_dirs (List[Path]): List of directory paths to create.
-    """
     for path in path_to_dirs:
         try:
             path.mkdir(parents=True, exist_ok=True)
@@ -54,16 +44,11 @@ def create_directories(path_to_dirs: List[Path]) -> None:
             logger.error(f"Error creating directory '{path}': {e}")
             raise
 
-
+# -------------------------
+# JSON utilities
+# -------------------------
 @ensure_annotations
 def save_json(path: Path, data: dict) -> None:
-    """
-    Saves a dictionary to a JSON file.
-
-    Args:
-        path (Path): Path to the JSON file.
-        data (dict): Dictionary data to save.
-    """
     try:
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(
@@ -75,18 +60,8 @@ def save_json(path: Path, data: dict) -> None:
         logger.error(f"Error saving JSON file '{path}': {e}")
         raise
 
-
-@ensure_annotations
+# Removed ensure_annotations to avoid TypeError with ConfigBox
 def load_json(path: Path) -> ConfigBox:
-    """
-    Loads data from a JSON file and returns it as a ConfigBox.
-
-    Args:
-        path (Path): Path to the JSON file.
-
-    Returns:
-        ConfigBox: Content of the JSON file as a ConfigBox object.
-    """
     try:
         content = json.loads(path.read_text(encoding='utf-8'))
         logger.info(f"Data loaded from JSON file: '{path}'")
@@ -98,16 +73,11 @@ def load_json(path: Path) -> ConfigBox:
         logger.error(f"Error decoding JSON file: {e}")
         raise ValueError(f"Invalid JSON file: {path}") from e
 
-
+# -------------------------
+# Binary utilities
+# -------------------------
 @ensure_annotations
 def save_binary(path: Path, data: Any) -> None:
-    """
-    Saves data to a binary file using joblib.
-
-    Args:
-        path (Path): Path to the binary file.
-        data (Any): Data to save.
-    """
     try:
         path.parent.mkdir(parents=True, exist_ok=True)
         joblib.dump(data, path)
@@ -116,18 +86,8 @@ def save_binary(path: Path, data: Any) -> None:
         logger.error(f"Error saving binary file '{path}': {e}")
         raise
 
-
 @ensure_annotations
 def load_binary(path: Path) -> Any:
-    """
-    Loads data from a binary file using joblib.
-
-    Args:
-        path (Path): Path to the binary file.
-
-    Returns:
-        Any: Content of the binary file.
-    """
     try:
         content = joblib.load(path)
         logger.info(f"Data loaded from binary file: '{path}'")
@@ -139,18 +99,11 @@ def load_binary(path: Path) -> Any:
         logger.error(f"Error loading binary file '{path}': {e}")
         raise ValueError(f"Invalid binary file: {path}") from e
 
-
+# -------------------------
+# File size utility
+# -------------------------
 @ensure_annotations
 def get_size(path: Path) -> int:
-    """
-    Gets the size of a file in bytes.
-
-    Args:
-        path (Path): Path to the file.
-
-    Returns:
-        int: Size of the file in bytes.
-    """
     try:
         size = path.stat().st_size
         logger.info(f"Size of file '{path}': {size} bytes")
