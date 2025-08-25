@@ -1,7 +1,8 @@
 from my_project.constants import *
 from my_project.utils.common import read_yaml, create_directories
 from pathlib import Path
-from my_project.entity.config_entity import DataIngestionConfig
+from my_project.entity.config_entity import DataIngestionConfig, DataValidationConfig
+
 
 # configuration manager
 class ConfigurationManager:
@@ -32,3 +33,17 @@ class ConfigurationManager:
             local_data_file=Path(cfg.local_data_file),
             unzip_dir=Path(cfg.unzip_dir),
         )
+
+        
+    # data validation dir
+    def get_data_validation_config(self) -> DataValidationConfig:
+        config = self.config.data_validation
+
+        data_validation_config = DataValidationConfig(
+            root_dir=Path(config.root_dir),
+            status_file=Path(config.root_dir) / config.status_file,
+            unzip_data_dir=Path(config.unzip_data_dir),
+            report_file=Path(config.root_dir) / config.report_file,
+            all_schema=Path(SCHEMA_FILE_PATH),  # 🔥 pass the path, not the Box/dict
+        )
+        return data_validation_config
