@@ -4,6 +4,7 @@ from my_project.pipeline.stage_02_datavalidation import DataValidationTrainingPi
 
 logger.info("Starting the data ingestion pipeline...")
 
+# ingestion stage
 STAGE_NAME = "Data Ingestion Stage"
 
 try:
@@ -14,6 +15,7 @@ except Exception as e:
     logger.exception(e)
     raise e
 
+# validation stage
 STAGE_NAME = "Data Validation Stage"
 logger.info(f"===== Stage {STAGE_NAME} started =====")
 
