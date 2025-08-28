@@ -20,3 +20,10 @@ class DataValidationConfig:
     unzip_data_dir: Path
     report_file: Path
     all_schema: Path 
+
+
+# data transformation related configuration
+@dataclass(frozen=True)
+class DataTransformationConfig:
+    root_dir: Path
+    data_path: Path

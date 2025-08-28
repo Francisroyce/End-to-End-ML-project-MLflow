@@ -1,7 +1,9 @@
 from my_project.constants import *
 from my_project.utils.common import read_yaml, create_directories
 from pathlib import Path
-from my_project.entity.config_entity import DataIngestionConfig, DataValidationConfig
+from my_project.entity.config_entity import (DataIngestionConfig, DataValidationConfig,
+                                              DataTransformationConfig)
+                                         
 
 
 # configuration manager
@@ -47,3 +49,14 @@ class ConfigurationManager:
             all_schema=Path(SCHEMA_FILE_PATH),  # 🔥 pass the path, not the Box/dict
         )
         return data_validation_config
+
+
+    # data transformation config
+    def get_data_transformation_config(self) -> DataTransformationConfig:
+        config = self.config.data_transformation
+        create_directories([Path(config.root_dir)])
+        data_transformation_config = DataTransformationConfig(
+            root_dir=Path(config.root_dir),
+            data_path=Path(config.data_path)
+        )
+        return data_transformation_config

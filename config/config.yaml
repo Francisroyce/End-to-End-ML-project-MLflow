@@ -17,5 +17,12 @@ data_validation:
   all_schema: schema.yaml
 
 
+# data transformation
+data_transformation:
+  root_dir: artifacts/data_transformation
+  data_path: artifacts/data_validation/cleaned_data.csv
+
+
+
 
  

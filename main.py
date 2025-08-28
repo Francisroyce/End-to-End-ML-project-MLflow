@@ -1,6 +1,7 @@
 from my_project import logger
 from my_project.pipeline.stage_01_data_ingestion import DataIngestionTrainingPipeline
 from my_project.pipeline.stage_02_datavalidation import DataValidationTrainingPipeline
+from my_project.pipeline.stage_03_data_transformation import DataTransformationTrainingPipeline
 
 logger.info("Starting the data ingestion pipeline...")
 
@@ -26,3 +27,15 @@ try:
 except Exception as e:
     logger.exception(e)
     raise e
+
+
+STAGE_NAME = "Data Transformation Stage"
+logger.info(f"===== Stage {STAGE_NAME} started =====")
+
+try:
+    pipeline = DataTransformationTrainingPipeline()
+    pipeline.main()
+    logger.info(f"===== Stage {STAGE_NAME} completed =====")
+except Exception as e:
+        logger.exception(e)
+        raise e  
