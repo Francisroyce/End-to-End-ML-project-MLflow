@@ -2,7 +2,7 @@ from my_project.constants import *
 from my_project.utils.common import read_yaml, create_directories
 from pathlib import Path
 from my_project.entity.config_entity import (DataIngestionConfig, DataValidationConfig,
-                                              DataTransformationConfig)
+                                              DataTransformationConfig, ModelTrainerConfig)
                                          
 
 
@@ -60,3 +60,25 @@ class ConfigurationManager:
             data_path=Path(config.data_path)
         )
         return data_transformation_config
+    
+
+    # model trainer config
+    def get_model_trainer_config(self) -> ModelTrainerConfig:
+        config = self.config.model_trainer
+        params = self.params.ElasticNet
+        schema = self.schema.target_column
+
+        create_directories([Path(config.root_dir)])
+
+        model_trainer_config = ModelTrainerConfig(
+            root_dir=Path(config.root_dir),
+            trained_data_path=Path(config.trained_data_path),
+            test_data_path=Path(config.test_data_path),
+            model_name=config.model_name,
+            alpha=params.alpha,
+            l1_ratio=params.l1_ratio,
+            random_state=params.random_state,
+            target_column=schema
+        )
+
+        return model_trainer_config
