@@ -29,7 +29,7 @@ except Exception as e:
     logger.exception(e)
     raise e
 
-
+# transformation stage
 STAGE_NAME = "Data Transformation Stage"
 logger.info(f"===== Stage {STAGE_NAME} started =====")
 
@@ -41,7 +41,7 @@ except Exception as e:
         logger.exception(e)
         raise e  
 
-
+# model trainer stage
 STAGE_NAME = "Model Trainer Stage"
 try:
     logger.info(f"===== Stage {STAGE_NAME} started =====")

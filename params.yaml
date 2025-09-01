@@ -1,4 +1,9 @@
 ElasticNet:
-  alpha: 0.5
-  l1_ratio: 0.7
+  alpha: [0.01, 0.1, 0.5, 1.0]     # range to search for best balance
+  l1_ratio: [0.1, 0.5, 0.7, 0.9]   # try different L1/L2 mixes
   random_state: 42
+
+model_evaluation:
+  evaluation_metric: all
+  threshold: 0.5
+  note: "Evaluation of tuned ElasticNet model"
