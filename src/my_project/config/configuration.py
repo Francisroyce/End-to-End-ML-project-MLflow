@@ -2,7 +2,7 @@ from my_project.constants import *
 from my_project.utils.common import read_yaml, create_directories
 from pathlib import Path
 from my_project.entity.config_entity import (DataIngestionConfig, DataValidationConfig,
-                                              DataTransformationConfig, ModelTrainerConfig)
+                                              DataTransformationConfig, ModelTrainerConfig, ModelEvaluationConfig)
                                          
 
 
@@ -82,3 +82,33 @@ class ConfigurationManager:
         )
 
         return model_trainer_config
+    
+
+
+    # model evaluation config
+    def get_model_evaluation_config(self) -> ModelEvaluationConfig:
+        # Attribute-style access for config
+        config = self.config.model_evaluation
+
+        # Use model evaluation params from params.yaml
+        # This now exists in your updated params.yaml
+        params = self.params.model_evaluation
+
+        # Use target_column from schema.yaml
+        schema = self.schema.target_column
+
+        # Ensure evaluation root directory exists
+        create_directories([Path(config.root_dir)])
+
+        # Build ModelEvaluationConfig dataclass
+        model_evaluation_config = ModelEvaluationConfig(
+            root_dir=Path(config.root_dir),
+            test_data_path=Path(config.test_data_path),
+            model_path=Path(config.model_path),
+            all_params=params,  # now contains meaningful evaluation params
+            metric_file_name=Path(config.metric_file_name),
+            target_column=schema,
+            mlflow_url=config.mlflow_url
+        )
+
+        return model_evaluation_config
