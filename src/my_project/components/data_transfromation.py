@@ -3,7 +3,6 @@ import os
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from my_project import logger
-
 from my_project.entity.config_entity import DataTransformationConfig
 
 class DataTransformation:

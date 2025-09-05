@@ -36,11 +36,9 @@ class ModelTrainerConfig:
     trained_data_path: Path
     test_data_path: Path
     model_name: str
-    alpha: float
-    l1_ratio: float
-    random_state: int
+    params: dict          # ✅ hyperparameter grid
     target_column: str
-
+    evaluation_metric: str = "r2"   # ✅ default metric
 
 # entity model evaluation related configuration
 @dataclass

@@ -1,9 +1,13 @@
 from my_project.constants import *
 from my_project.utils.common import read_yaml, create_directories
 from pathlib import Path
-from my_project.entity.config_entity import (DataIngestionConfig, DataValidationConfig,
-                                              DataTransformationConfig, ModelTrainerConfig, ModelEvaluationConfig)
-                                         
+from my_project.entity.config_entity import (
+    DataIngestionConfig,
+    DataValidationConfig,
+    DataTransformationConfig,
+    ModelTrainerConfig,
+    ModelEvaluationConfig,
+)
 
 
 # configuration manager
@@ -20,9 +24,9 @@ class ConfigurationManager:
         self.schema = read_yaml(schema_filepath)
 
         # Ensure artifacts root exists
-        create_directories(Path(self.config.artifacts_root))
-        
-# data ingestion config
+        create_directories([Path(self.config.artifacts_root)])
+
+    # data ingestion config
     def get_data_ingestion_config(self) -> DataIngestionConfig:
         cfg = self.config.data_ingestion
 
@@ -36,8 +40,7 @@ class ConfigurationManager:
             unzip_dir=Path(cfg.unzip_dir),
         )
 
-        
-    # data validation dir
+    # data validation config
     def get_data_validation_config(self) -> DataValidationConfig:
         config = self.config.data_validation
 
@@ -46,43 +49,46 @@ class ConfigurationManager:
             status_file=Path(config.root_dir) / config.status_file,
             unzip_data_dir=Path(config.unzip_data_dir),
             report_file=Path(config.root_dir) / config.report_file,
-            all_schema=Path(SCHEMA_FILE_PATH),  # 🔥 pass the path, not the Box/dict
+            all_schema=Path(SCHEMA_FILE_PATH),  # 🔥 Pass the schema file path
         )
         return data_validation_config
-
 
     # data transformation config
     def get_data_transformation_config(self) -> DataTransformationConfig:
         config = self.config.data_transformation
         create_directories([Path(config.root_dir)])
+
         data_transformation_config = DataTransformationConfig(
             root_dir=Path(config.root_dir),
-            data_path=Path(config.data_path)
+            data_path=Path(config.data_path),
         )
         return data_transformation_config
-    
 
     # model trainer config
-    def get_model_trainer_config(self) -> ModelTrainerConfig:
+    def get_model_trainer_configs(self) -> dict[str, ModelTrainerConfig]:
+        """
+        Returns a dictionary of model_name -> ModelTrainerConfig
+        """
         config = self.config.model_trainer
-        params = self.params.ElasticNet
         schema = self.schema.target_column
+        eval_metric = self.params.model_evaluation.evaluation_metric
 
+        configs = {}
         create_directories([Path(config.root_dir)])
 
-        model_trainer_config = ModelTrainerConfig(
-            root_dir=Path(config.root_dir),
-            trained_data_path=Path(config.trained_data_path),
-            test_data_path=Path(config.test_data_path),
-            model_name=config.model_name,
-            alpha=params.alpha,
-            l1_ratio=params.l1_ratio,
-            random_state=params.random_state,
-            target_column=schema
-        )
+        for model_name, model_params in self.params.models.items():
+            model_trainer_config = ModelTrainerConfig(
+                root_dir=Path(config.root_dir),
+                trained_data_path=Path(config.trained_data_path),
+                test_data_path=Path(config.test_data_path),
+                model_name=model_name,
+                params=model_params,
+                target_column=schema,
+                evaluation_metric=eval_metric,
+            )
+            configs[model_name] = model_trainer_config
 
-        return model_trainer_config
-    
+        return configs
 
 
     # model evaluation config
@@ -91,7 +97,6 @@ class ConfigurationManager:
         config = self.config.model_evaluation
 
         # Use model evaluation params from params.yaml
-        # This now exists in your updated params.yaml
         params = self.params.model_evaluation
 
         # Use target_column from schema.yaml
@@ -108,7 +113,7 @@ class ConfigurationManager:
             all_params=params,  # now contains meaningful evaluation params
             metric_file_name=Path(config.metric_file_name),
             target_column=schema,
-            mlflow_url=config.mlflow_url
+            mlflow_url=config.mlflow_url,
         )
 
         return model_evaluation_config

@@ -20,7 +20,7 @@ data_validation:
 # data transformation
 data_transformation:
   root_dir: artifacts/data_transformation
-  data_path: artifacts/data_validation/cleaned_data.csv
+  data_path: artifacts/data_ingestion/winequality-red.csv
 
 
 # model trainer
@@ -35,7 +35,7 @@ model_trainer:
 model_evaluation:
   root_dir: artifacts/model_evaluation
   test_data_path: artifacts/data_transformation/test.csv
-  model_path: artifacts/model_trainer/model.joblib
+  model_path: artifacts/model_trainer/randomforest.pkl
   metric_file_name: artifacts/model_evaluation/metric.json
   mlflow_url: https://dagshub.com/Francisroyce/End-to-End-ML-project-MLflow.mlflow
 

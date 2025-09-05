@@ -1,0 +1,6 @@
+{
+    "model_name": "elasticnet",
+    "random_state": 42,
+    "l1_ratio": 0.1,
+    "alpha": 0.001
+}
