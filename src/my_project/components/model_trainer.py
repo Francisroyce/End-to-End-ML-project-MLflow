@@ -45,7 +45,7 @@ class ModelTrainer:
             model,
             params,
             n_iter=n_iter,
-            cv=3,
+            cv=5,
             scoring=scoring,
             n_jobs=-1,
             random_state=42,
