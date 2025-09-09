@@ -20,3 +20,4 @@ try:
     print("Model evaluation metrics:", metrics)
 except Exception as e:
     print(f"Error during model evaluation: {e}")
+
