@@ -1,36 +1,46 @@
-# Use a lightweight Python base image
+# Wine Quality Prediction System - Docker Configuration
 FROM python:3.10-slim
-
-# Set environment variables
-ENV PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1 \
-    FLASK_APP=app.py \
-    FLASK_RUN_HOST=0.0.0.0
 
 # Set working directory
 WORKDIR /app
 
+# Set environment variables
+ENV PYTHONPATH=/app
+ENV FLASK_APP=app.py
+ENV FLASK_ENV=production
+ENV PYTHONUNBUFFERED=1
+
 # Install system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential gcc libpq-dev git \
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy dependency list first (for efficient caching)
+# Copy requirements and install Python dependencies
 COPY requirements.txt .
-
-# Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy project files
+# Copy application files
 COPY . .
 
 # Create necessary directories
-RUN mkdir -p logs static/css static/js templates artifacts
+RUN mkdir -p logs static/css static/js templates artifacts/model_trainer
+
+# Set permissions
+RUN chmod -R 755 /app
+
+# Create non-root user for security
+RUN adduser --disabled-password --gecos '' appuser && \
+    chown -R appuser:appuser /app
+USER appuser
 
 # Expose port
 EXPOSE 8080
 
-# Start with Gunicorn in production
-# - 4 workers (can tune with CPU count)
-# - Bind to port 8080
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8080", "app:app"]
+# Health check (will still pass before model is loaded)
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:8080/health || exit 1
+
+# Run the application with fewer workers (free tier RAM safe)
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "1", "--threads", "1", "--timeout", "120", "app:app"]

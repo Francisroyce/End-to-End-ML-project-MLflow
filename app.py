@@ -27,7 +27,7 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-# Application configuration
+# -------------------- Configuration -------------------- #
 class Config:
     """Application configuration class"""
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'wine-quality-prediction-secret-key-2024'
@@ -57,11 +57,11 @@ class Config:
         'pH', 'sulphates', 'alcohol'
     ]
 
-# Initialize Flask app
+# -------------------- Flask App -------------------- #
 app = Flask(__name__)
 app.config.from_object(Config)
 
-# Global variables
+# -------------------- Globals -------------------- #
 prediction_pipeline = None
 model_info = {
     'algorithm': 'Random Forest',
@@ -70,6 +70,7 @@ model_info = {
     'accuracy': '92.3%'
 }
 
+# -------------------- Custom Exceptions -------------------- #
 class PredictionError(Exception):
     pass
 
@@ -78,6 +79,7 @@ class ValidationError(Exception):
 
 # -------------------- Model Loader -------------------- #
 def load_model() -> bool:
+    """Load ML model from disk"""
     global prediction_pipeline
     try:
         from src.my_project.pipeline.prediction import PredictionPipeline
@@ -90,6 +92,14 @@ def load_model() -> bool:
     except Exception as e:
         logger.error(f"Model load failed: {e}")
         return False
+
+def ensure_model_loaded():
+    """Lazy load model on first request"""
+    global prediction_pipeline
+    if prediction_pipeline is None:
+        logger.info("Lazy-loading ML model...")
+        if not load_model():
+            logger.warning("Model could not be loaded. Predictions unavailable.")
 
 # -------------------- Validation -------------------- #
 def validate_input_data(data: Dict[str, Any]) -> Tuple[bool, Dict[str, Any], str]:
@@ -154,7 +164,7 @@ def get_quality_level(prediction: float) -> str:
         return "Standard"
     return "Basic"
 
-# Register filters
+# Register Jinja helpers
 app.jinja_env.globals.update(
     get_quality_class=get_quality_class,
     get_quality_description=get_quality_description,
@@ -268,6 +278,7 @@ def bad_request_error(error):
 @app.before_request
 def log_request_info():
     logger.info(f"Request: {request.method} {request.path} from {request.remote_addr}")
+    ensure_model_loaded()
 
 @app.after_request
 def log_response_info(response):
@@ -283,10 +294,6 @@ def create_directories():
         if not os.path.exists(directory):
             os.makedirs(directory)
             logger.info(f"Created directory: {directory}")
-
-# Load model at startup
-if not load_model():
-    logger.warning("Model failed to load. Limited functionality.")
 
 if __name__ == "__main__":
     create_directories()
