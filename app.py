@@ -34,7 +34,7 @@ class Config:
     MODEL_PATH = os.environ.get('MODEL_PATH') or 'artifacts/model_trainer/randomforest.pkl'
     DEBUG = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
     HOST = os.environ.get('FLASK_HOST', '0.0.0.0')
-    PORT = int(os.environ.get('PORT', 8080))
+    PORT = int(os.environ.get('PORT', 8080))   # Use Render's PORT if provided
     
     # Feature validation ranges
     FEATURE_RANGES = {
@@ -206,7 +206,7 @@ def predict():
             'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         }
         return render_template('result.html', **result_data)
-    except Exception as e:
+    except Exception:
         logger.error(traceback.format_exc())
         flash("Unexpected error during prediction.", "error")
         return redirect(url_for('home'))
@@ -236,7 +236,7 @@ def api_predict():
             'timestamp': datetime.now().isoformat(),
             'status': 'success'
         })
-    except Exception as e:
+    except Exception:
         logger.error(traceback.format_exc())
         return jsonify({'error': 'Internal server error', 'status': 'error'}), 500
 
@@ -302,5 +302,7 @@ if __name__ == "__main__":
         file_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s'))
         app.logger.addHandler(file_handler)
         app.logger.setLevel(logging.INFO)
-    logger.info(f"Starting Wine Quality Prediction App on {Config.HOST}:{Config.PORT}")
-    app.run(host=Config.HOST, port=Config.PORT, debug=Config.DEBUG, threaded=True)
+
+    port = int(os.environ.get("PORT", Config.PORT))   # use Render's PORT
+    logger.info(f"Starting Wine Quality Prediction App on {Config.HOST}:{port}")
+    app.run(host=Config.HOST, port=port, debug=Config.DEBUG, threaded=True)
