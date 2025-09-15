@@ -34,7 +34,7 @@ class Config:
     MODEL_PATH = os.environ.get('MODEL_PATH') or 'artifacts/model_trainer/randomforest.pkl'
     DEBUG = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
     HOST = os.environ.get('FLASK_HOST', '0.0.0.0')
-    PORT = int(os.environ.get('FLASK_PORT', 8080))
+    PORT = int(os.environ.get('PORT', 8080))
     
     # Feature validation ranges
     FEATURE_RANGES = {
